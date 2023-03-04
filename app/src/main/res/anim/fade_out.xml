@@ -6,11 +6,11 @@
         android:duration = "300"/>
 
     <scale android:fromXScale="100%"
-       android:fromYScale="100%"
+        android:fromYScale="100%"
         android:toXScale="40%"
+        android:toYScale="40%"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:toYScale="40%"
         android:duration="300" />
 
 </set>

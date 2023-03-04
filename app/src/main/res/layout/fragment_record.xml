@@ -19,7 +19,7 @@
           android:layout_marginTop="64dp"/>
 
       <TextView
-         android:id="@+id/record_files"
+         android:id="@+id/record_fileName"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:fontFamily="sans-serif-black"
@@ -35,10 +35,10 @@
               android:id="@+id/record_timer"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_below="@id/record_files"
-              android:layout_marginTop="64dp"
+              android:layout_below="@id/record_fileName"
+              android:layout_marginTop="56dp"
               android:layout_centerHorizontal="true"
-              android:textSize="55sp"
+              android:textSize="56sp"
               android:textColor="#1E1E1E"
               />
 

@@ -20,5 +20,5 @@
         android:id="@+id/audioListFragment"
         android:name="com.devdroid.voicerecording.AudioListFragment"
         android:label="fragment_audio_list"
-        tools:layout="@layout/fragment_audio_list" />
+        tools:layout="@layout/fragment_audio_list"/>
 </navigation>

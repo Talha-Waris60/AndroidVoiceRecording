@@ -1,6 +1,7 @@
 package com.devdroid.voicerecording;
 
 import android.content.pm.PackageManager;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,13 +11,21 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 public class RecordFragment extends Fragment implements View.OnClickListener {
@@ -30,6 +39,13 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
     private boolean isRecording = false;
     private static final String recordPermissions = Manifest.permission.RECORD_AUDIO;
     private static final int PERMISSION_CODE = 210;
+    // Variable for startRecording
+    private MediaRecorder mediaRecorder;
+    // Variable to store Files
+    private  String recordFile;
+    private Chronometer timer;
+    private TextView fileNameText;
+
 
     public RecordFragment() {
         // Required empty public constructor
@@ -50,6 +66,8 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
         navController = Navigation.findNavController(view);
         list_btn = view.findViewById(R.id.list_btn);
         record_btn = view.findViewById(R.id.record_btn);
+        timer = view.findViewById(R.id.record_timer);
+        fileNameText = view.findViewById(R.id.record_fileName);
 
         list_btn.setOnClickListener(this);
         record_btn.setOnClickListener(this);
@@ -67,20 +85,71 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
                 if(isRecording)
                 {
                     // stop Recording
-                    record_btn.setImageDrawable(getResources().getDrawable(R.drawable.mic_red,null));
+                    stopRecording();
+                    record_btn.setImageDrawable(getResources().getDrawable(R.drawable.mic_re,null));
                     isRecording = false;
                 }
                 else
                 {
                     // start Recording
                     if (checkPermissions()) {
-                        record_btn.setImageDrawable(getResources().getDrawable(R.drawable.mic_re, null));
+                        startRecording();
+                        record_btn.setImageDrawable(getResources().getDrawable(R.drawable.mic_red, null));
                         isRecording = true;
                     }
                 }
                 break;
         }
 
+    }
+
+    private void startRecording() {
+
+        // When the user press the start button timer is start
+        timer.setBase(SystemClock.elapsedRealtime());
+        timer.start();
+        String recordPath = getActivity().getExternalFilesDir("/").getAbsolutePath();
+
+        // To make the file name Dynamic We use SimpleDataFormat
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.CANADA);
+
+        // Date Object
+        Date date = new Date();
+
+        recordFile = "Recording_" + dateFormat.format(date) +  ".3gp";
+
+        // Set the filename on textView
+        fileNameText.setText("Recording, File Name: " + recordFile);
+
+        // Initialize MediaPlayer here
+        mediaRecorder = new MediaRecorder();
+        // set the Audio Source
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        // Output format of MediaRecord
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setOutputFile(recordPath+"/"+recordFile);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mediaRecorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mediaRecorder.start();
+    }
+
+    private void stopRecording() {
+
+        // Set the filename on textView
+        fileNameText.setText("Recording Stopped, File Saved : " + recordFile);
+
+
+        // When the user press the stop button timer is stop
+        timer.stop();
+
+        mediaRecorder.stop();
+        mediaRecorder.release();
+        mediaRecorder = null;
     }
 
     private boolean checkPermissions() {
@@ -94,23 +163,6 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
         {
             ActivityCompat.requestPermissions(getActivity(), new String[]{recordPermissions}, PERMISSION_CODE);
             return false;
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case PERMISSION_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission granted, start recording
-                    Log.d("RecordFragment", "mic_re drawable ID: " + R.drawable.mic_red);
-                    record_btn.setImageDrawable(getResources().getDrawable(R.drawable.mic_red, null));
-                    isRecording = true;
-                } else {
-                    // permission denied, show message
-                    Toast.makeText(getContext(), "Permission Denied!", Toast.LENGTH_SHORT).show();
-                }
-                break;
         }
     }
 }
