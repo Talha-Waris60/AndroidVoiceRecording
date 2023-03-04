@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RecordFragment">
+
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+
+
+      <ImageView
+          android:id="@+id/record_girl"
+          android:layout_width="250dp"
+          android:layout_height="260dp"
+          android:layout_centerHorizontal="true"
+          android:src="@drawable/record_girl"
+          android:layout_marginTop="64dp"/>
+
+      <TextView
+         android:id="@+id/record_files"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:fontFamily="sans-serif-black"
+          android:text="Press the mic button \n to start recording"
+          android:lineHeight="25dp"
+          android:layout_below="@id/record_girl"
+          android:layout_centerHorizontal="true"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:layout_marginTop="64dp"/>
+
+          <Chronometer
+              android:id="@+id/record_timer"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_below="@id/record_files"
+              android:layout_marginTop="64dp"
+              android:layout_centerHorizontal="true"
+              android:textSize="55sp"
+              android:textColor="#1E1E1E"
+              />
+
+
+      <ImageButton
+         android:id="@+id/record_btn"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:layout_below="@id/record_timer"
+          android:layout_centerHorizontal="true"
+          android:src="@drawable/mic_re"
+          android:layout_marginTop="30dp"
+          android:background="@color/white"
+          android:scaleType="fitXY"
+          />
+
+
+      <ImageButton
+          android:id="@+id/list_btn"
+          android:src="@drawable/list"
+          android:layout_width="40dp"
+          android:layout_below="@id/record_timer"
+          android:layout_alignParentEnd="true"
+          android:layout_height="50dp"
+          android:layout_marginTop="55dp"
+          android:background="@color/white"
+          android:layout_marginEnd="85dp"
+          android:scaleType="fitCenter"
+          />
+
+
+   </RelativeLayout>
+
+</FrameLayout>
