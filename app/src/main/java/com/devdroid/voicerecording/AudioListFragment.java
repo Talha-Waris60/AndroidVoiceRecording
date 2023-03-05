@@ -1,5 +1,6 @@
 package com.devdroid.voicerecording;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,23 +9,37 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.PrivateKey;
 
 
-public class AudioListFragment extends Fragment {
+public class AudioListFragment extends Fragment implements AudioListAdapter.onItemListClick{
 
     private RelativeLayout playerSheet;
     private BottomSheetBehavior bottomSheetBehavior;
     private RecyclerView audioRecyclerView;
     private File[] allAudioFiles;
     private AudioListAdapter audioListAdapter;
+    private MediaPlayer mediaPlayer = null;
+    private boolean isPlaying = false;
+    private File fileToPlay;
+
+    // UI Elements
+    private ImageButton playButton;
+    private TextView playerHeader;
+    private TextView playerFilename;
+
 
 
 
@@ -47,6 +62,9 @@ public class AudioListFragment extends Fragment {
         playerSheet = view.findViewById(R.id.player_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(playerSheet);
         audioRecyclerView = view.findViewById(R.id.audio_recycle_view);
+        playButton = view.findViewById(R.id.play_button);
+        playerHeader = view.findViewById(R.id.player_header_title);
+        playerFilename = view.findViewById(R.id.player_fileName);
 
         // Give the path where we store out video
         String path = getActivity().getExternalFilesDir("/").getAbsolutePath();
@@ -55,10 +73,11 @@ public class AudioListFragment extends Fragment {
         // List all the files of the directory
         allAudioFiles = directory.listFiles();
 
-        audioListAdapter = new AudioListAdapter(allAudioFiles);
+        audioListAdapter = new AudioListAdapter(allAudioFiles, this);
         audioRecyclerView.setHasFixedSize(true);
         audioRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         audioRecyclerView.setAdapter(audioListAdapter);
+        ;
 
         // Add bottom Sheet call back method
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -76,5 +95,60 @@ public class AudioListFragment extends Fragment {
                 // We can do anything here for this app
             }
         });
+    }
+
+    @Override
+    public void onClickListener(File file, int position) {
+        if (isPlaying)
+        {
+            // Stop the Audio
+            stopAudio();
+            playAudio(fileToPlay);
+
+        }
+        else {
+            // play the Audio
+            fileToPlay = file;
+            playAudio(fileToPlay);
+        }
+    }
+
+    private void stopAudio() {
+        // Stop the Audio
+        playButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.play_button,null));
+        playerHeader.setText("Stopped");
+        isPlaying = false;
+
+    }
+
+    private void playAudio(File filetoPlay) {
+
+        mediaPlayer = new MediaPlayer();
+
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        try {
+            mediaPlayer.setDataSource(filetoPlay.getAbsolutePath());
+
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        playButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.player_pause_button,null));
+        playerFilename.setText(filetoPlay.getName());
+        playerHeader.setText("playing");
+        // This method will be used to play the audio
+        isPlaying = true;
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                stopAudio();
+                playerHeader.setText("Finished");
+            }
+        });
+
     }
 }
