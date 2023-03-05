@@ -230,6 +230,9 @@ public class AudioListFragment extends Fragment implements AudioListAdapter.onIt
     @Override
     public void onStop() {
         super.onStop();
-        stopAudio();
+        if (isPlaying)
+        {
+            stopAudio();
+        }
     }
 }
