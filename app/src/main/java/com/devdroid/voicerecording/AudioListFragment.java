@@ -35,7 +35,7 @@ public class AudioListFragment extends Fragment implements AudioListAdapter.onIt
     private AudioListAdapter audioListAdapter;
     private MediaPlayer mediaPlayer = null;
     private boolean isPlaying = false;
-    private File fileToPlay;
+    private File fileToPlay = null;
 
     // UI Elements
     private ImageButton playButton;
@@ -104,24 +104,47 @@ public class AudioListFragment extends Fragment implements AudioListAdapter.onIt
                 // We can do anything here for this app
             }
         });
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isPlaying) {
+                    pauseAudio();
+                }
+                else {
+                    if (fileToPlay != null) {
+                        resumeAudio();
+                    }
+                }
+            }
+        });
     }
 
     @Override
     public void onClickListener(File file, int position) {
+        fileToPlay = file;
         if (isPlaying)
         {
             // Stop the Audio
             stopAudio();
             playAudio(fileToPlay);
-
         }
         else {
             // play the Audio
-            fileToPlay = file;
             playAudio(fileToPlay);
         }
     }
 
+    private void pauseAudio() {
+        mediaPlayer.pause();
+        playButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.play_button,null));
+        isPlaying = false;
+    }
+    private void resumeAudio() {
+        mediaPlayer.start();
+        playButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.player_pause_button,null));
+        isPlaying = true;
+    }
     private void stopAudio() {
         // Stop the Audio
         playButton.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.play_button,null));
